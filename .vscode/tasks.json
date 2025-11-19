@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+
+        // ----------------------------------------------------
+        // 1. F5 → Only Ninja build (fast)
+        // ----------------------------------------------------
+        {
+            "label": "Ninja Only",
+            "type": "shell",
+            "command": "cmake --build build",
+            "problemMatcher": ["$gcc"]
+        },
+
+        // ----------------------------------------------------
+        // 2. Ctrl+Shift+B → Full CMake configure + build
+        // ----------------------------------------------------
+        {
+            "label": "CMake + Ninja",
+            "type": "shell",
+            "command": "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug && cmake --build build",
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

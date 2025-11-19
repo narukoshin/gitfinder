@@ -1,0 +1,22 @@
+{
+    "cmake.generator": "Ninja",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureArgs": [
+        "-DCMAKE_BUILD_TYPE=Debug"
+    ],
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.defaultVariants": {
+        "buildType": {
+            "default": "debug",
+            "description": "Choose the build type",
+            "choices": {
+                "debug": {
+                    "short": "Debug",
+                    "long": "Debug build",
+                    "buildType": "Debug"
+                }
+            }
+        }
+    },
+    "cmake.buildBeforeRun": true
+}
