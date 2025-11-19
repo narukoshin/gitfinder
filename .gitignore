@@ -1,0 +1,11 @@
+# Deny all
+*
+
+# Allow list
+!.gitignore
+!CMakeLists.txt
+!main.cpp
+
+# VSCode settings
+!.vscode
+!.vscode/*
