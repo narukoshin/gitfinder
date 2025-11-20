@@ -18,5 +18,9 @@
             }
         }
     },
-    "cmake.buildBeforeRun": true
+    "cmake.buildBeforeRun": true,
+    "files.associations": {
+        "ostream": "cpp",
+        "iostream": "cpp"
+    }
 }

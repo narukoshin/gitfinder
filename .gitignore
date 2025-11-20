@@ -4,8 +4,11 @@
 # Allow list
 !.gitignore
 !CMakeLists.txt
-!main.cpp
 !LICENSE
+
+# src folder
+!src
+!src/**/*[.cpp,.h]
 
 # VSCode settings
 !.vscode

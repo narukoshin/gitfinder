@@ -30,7 +30,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(yaml-cpp)
 
-add_executable(main main.cpp)
+add_executable(main src/main.cpp)
 target_link_libraries(main 
     PRIVATE 
         cpr::cpr 
