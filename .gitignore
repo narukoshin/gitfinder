@@ -9,7 +9,7 @@
 # src folder
 !src
 !src/**/
-!src/**/*[.cpp,.h]
+!src/**/*[.cpp,.h,.py]
 
 # VSCode settings
 !.vscode
