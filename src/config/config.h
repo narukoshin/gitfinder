@@ -7,7 +7,7 @@ using namespace std::chrono_literals;
 
 class Config {
     private:
-        YAML::Node config;
+        YAML::Node config; // variable to store the contents of the configuration file
         /**
          * @brief Reads the configuration file specified by the configName parameter and stores the contents in the config member variable.
          * @param configName The name of the configuration file to read.
