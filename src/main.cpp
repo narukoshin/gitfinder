@@ -1,34 +1,49 @@
 #include "iostream"
 #include "string"
-#include "cpr/cpr.h"
 #include "vector"
 #include "chrono"
-
+#include "unordered_map"
 #include "collector/collector.h"
 #include "crawler/crawler.h"
+#include "config/config.h"
 
 using namespace std::chrono_literals;
 
 /**
- * @brief Main function.
- * This function collects a list of URLs from a file, sets up a crawler with 10 threads, and runs it.
- * The crawler will scan each URL and check if it is a valid git repository.
- * If it is, it will print out "Found git repo" and add the URL to the results vector.
+ * @brief The main function of the program.
+ * This function reads the configuration from config.yml,
+ * loads the collection of urls from the specified file,
+ * and runs the crawler with the specified number of threads and timeout.
+ * @return 0 if the program runs successfully, 1 otherwise.
  */
 int main(){
-    // collecting urls from file
-    Collector collector;
-    std::string collectorFile = "src/urls.txt";
-    std::vector<std::string> domains = collector.LoadFromFile(collectorFile);
+    int threads;
+    std::string timeout, collection_file;
+    std::unordered_map<std::string, std::string> headers;
 
-    // running crawler with 10 threads
-    Crawler::setup()
-        ->timeout(30s)
-        ->threads(20)
-        ->headers({
-            {"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36"}
-        })
-        ->collection(domains)
+    try {
+        // reading config file
+        Config::load("config.yml")
+            ->parameter("threads", &threads)
+            ->parameter("timeout", &timeout)
+            ->parameter("collection_file", &collection_file)
+            ->parameter("headers", &headers);
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+
+    // converting timeout string to seconds
+    std::chrono::seconds seconds = std::chrono::seconds(std::stoi(timeout));
+
+    // collecting urls from file
+    auto collection = Collector::FromFile(collection_file);
+
+    // running crawler with specified parameters
+    return Crawler::setup()
+        ->timeout(seconds)
+        ->threads(threads)
+        ->headers(headers)
+        ->collection(collection)
         ->Run();
-    return 0;
 }

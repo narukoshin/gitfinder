@@ -4,7 +4,8 @@
 #include "vector"
 #include "string"
 #include "chrono"
-#include <thread>
+#include "thread"
+#include "cstdio"
 #include "unordered_map"
 
 #include "cpr/cpr.h"
@@ -16,6 +17,12 @@ class Crawler {
         std::vector<std::string> collection_T; // Collection of domains
         std::unordered_map<std::string, std::string> headers_T; // Headers for each request
         std::vector<std::string> results_T; // Vector to store the results
+        /**
+         * @brief Returns a static instance of the Crawler class.
+         * @return A pointer to a static instance of the Crawler class.
+         * @details This function returns a pointer to a static instance of the Crawler class.
+         * It is used to retrieve a static instance of the Crawler class.
+         */
         static Crawler* setup() {
             static Crawler c;
             return &c;
@@ -73,7 +80,7 @@ class Crawler {
             // adding .git/HEAD to the url end of first url
             url += "/.git/HEAD";
 
-            std::cout << "Scanning " << url << std::endl;
+            printf("Looking at %s\n", url.c_str());
 
             // print out user agent
             cpr::Header header = cpr::Header(this->headers_T.begin(), this->headers_T.end());
@@ -81,7 +88,6 @@ class Crawler {
             if (r.status_code == 200) {
                 // checking if there is ref: refs/heads/ in the content
                 if (r.text.find("ref: refs/heads/") != std::string::npos) {
-                    std::cout << "Found git repo" << std::endl;
                     this->results_T.push_back(url);
                 }
             }
@@ -103,31 +109,55 @@ class Crawler {
                 return 1;
             }
             // splitting collection in chunks for each thread
-            size_t total = this->collection_T.size();
-            size_t chunk_sze = total / this->threads_T;
-            size_t reminder = total % this->threads_T;
+            const size_t threads = (this->threads_T > 0) ? this->threads_T : 1;
+
+            // checking if threads are not more than items in the collection
+            if (threads > this->collection_T.size()) {
+                // dynamically setting threads to the size of the collection
+                //      to prevent overthreading
+                this->threads_T = this->collection_T.size();
+            }
+
+            const size_t total = this->collection_T.size();
+            const size_t chunk_size = total / this->threads_T;
+            const size_t remainder = total % this->threads_T;
 
             std::vector<std::thread> pool;
             size_t start = 0;
 
             for (int i = 0; i < this->threads_T; i++) {
-                size_t end = start + chunk_sze;
+                std::cout << "Thread " << i << " started" << std::endl;
+                size_t end = start + chunk_size;
                 if (i == this->threads_T - 1) {
-                    end += reminder;
+                    end += remainder;
                 }
-                pool.push_back(std::thread([=] {
+                pool.emplace_back([this, start, end] {
+                    // scanning each chunk
                     for (size_t j = start; j < end; j++) {
-                        this->scan(this->collection_T[j]);
+                        scan(this->collection_T[j]);
                     }
-                }));
+                });
+                // updating start for next chunk
                 start = end;
+                if (start >= total) break; // break if start is greater than or equal to total
             }
-            for (auto& thread : pool) {
+
+            // joining threads
+            for (auto &thread : pool) {
                 thread.join();
             }
 
-            std::cout << "Found " << this->results_T.size() << " git repos" << std::endl;
+            // printing out results
 
+            printf("\n====== RESULTS ======\n");
+            printf("[+] Total scanned %ld domains\n", total);
+
+            if (this->results_T.empty()) {
+                printf("[+] No results found\n");
+                return 0;
+            }
+            printf("[+] Found %ld results\n", this->results_T.size());
+            printf("\n");
             for (auto& result : this->results_T) {
                 std::cout << result << std::endl;
             }
