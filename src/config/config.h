@@ -16,8 +16,8 @@ class Config {
         void readConfig(std::string configName) {
             // Checking if the file exists
             if (!std::filesystem::exists(configName)) {
-                std::cout << "Config file not found" << std::endl;
-                return;
+                std::cout << "Error: Config file not found" << std::endl;
+                exit(1);
             }
             this->config = YAML::LoadFile(configName);
         }
@@ -44,8 +44,8 @@ class Config {
         template<typename T>
         Config* parameter(std::string parameter, T* ptr){
             if (!this->config[parameter]) {
-                std::cerr << "Parameter " << parameter << " not found" << std::endl;
-                return this;
+                std::cerr << "Error: Parameter " << parameter << " not found" << std::endl;
+                exit(1);
             }
             *ptr = this->config[parameter].as<T>();
             return this;
