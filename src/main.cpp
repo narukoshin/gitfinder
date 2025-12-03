@@ -8,6 +8,9 @@
 
 using namespace std::chrono_literals;
 
+// This define specifies the version of the program.
+#define VERSION "v1.0.0"
+
 /**
  * @brief The main function of the program.
  * This function reads the configuration from config.yml,
