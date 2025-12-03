@@ -19,3 +19,6 @@
 !build.sh
 !toolchains/
 !toolchains/*
+
+# config sample
+!config.sample.yml

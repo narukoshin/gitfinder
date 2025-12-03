@@ -10,6 +10,7 @@ TOOLCHAINS_DIR="toolchains"
 BUILD_TYPE="Release"
 RELEASE_DIR="releases"
 WRK_DIR=$(pwd)
+SAMPLE_CONFIG="config.sample.yml"
 
 WINDOWS_BUILD="build-windows-amd64"
 LINUX_BUILD="build-linux-amd64"
@@ -64,7 +65,7 @@ linux() {
 
       action "Creating archive $linux_archive..."
       # change filename from main to gitfinder
-      tar -czf "$WRK_DIR/$RELEASE_DIR/$linux_archive" --transform='s|^main|gitfinder|' main
+      tar -czf "$WRK_DIR/$RELEASE_DIR/$linux_archive" --transform='s|^main|gitfinder|' main ../$SAMPLE_CONFIG
       action "Copying executable to the archive "
       info "Finished."
       # reset the working directory
@@ -105,5 +106,5 @@ clear
 linux
 
 # configures, builds and creates an archive for windows-amd64.
-windows
+# windows
 info "Build complete."
