@@ -14,3 +14,8 @@
 # VSCode settings
 !.vscode
 !.vscode/*
+
+# Building scripts
+!build.sh
+!toolchains/
+!toolchains/*
