@@ -150,13 +150,13 @@ class Crawler {
             // printing out results
 
             printf("\n====== RESULTS ======\n");
-            printf("[+] Total scanned %ld domains\n", total);
+            printf("[+] Total scanned %zu domains\n", total);
 
             if (this->results_T.empty()) {
                 printf("[+] No results found\n");
                 return 0;
             }
-            printf("[+] Found %ld results\n", this->results_T.size());
+            printf("[+] Found %zu results\n", this->results_T.size());
             printf("\n");
             for (auto& result : this->results_T) {
                 std::cout << result << std::endl;
