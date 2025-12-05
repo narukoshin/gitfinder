@@ -108,16 +108,17 @@ class Crawler {
                 std::cout << "Collection is empty" << std::endl;
                 return 1;
             }
-            // splitting collection in chunks for each thread
+            // validating threads, to avoid threads in negative or zero threads.
             const size_t threads = (this->threads_T > 0) ? this->threads_T : 1;
-
+            
             // checking if threads are not more than items in the collection
             if (threads > this->collection_T.size()) {
                 // dynamically setting threads to the size of the collection
                 //      to prevent overthreading
                 this->threads_T = this->collection_T.size();
             }
-
+            
+            // splitting collection in chunks for each thread
             const size_t total = this->collection_T.size();
             const size_t chunk_size = total / this->threads_T;
             const size_t remainder = total % this->threads_T;
