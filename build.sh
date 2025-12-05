@@ -82,17 +82,30 @@ linux() {
 #   - Prints information about the build process.
 windows() {
       action "Configuring windows-amd64..."
-      #                                  "Ninja" didn't work aswell
-      #                                            ⤹ 
-      cmake -S $SRC_DIR -B $WINDOWS_BUILD -G "Unix Makefiles" \
+      cmake -S $SRC_DIR -B $WINDOWS_BUILD -G "Ninja" \
             -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAINS_DIR/windows-x86_64.cmake \
+            -DCMAKE_EXE_LINKER_FLAGS="-static" \
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE
       info "Finished."
       action "Entering $WINDOWS_BUILD..."
       cd $WINDOWS_BUILD
       action "Building windows-amd64..."
-      make
+      ninja
       info "Finished."
+      windows_archive="${PROJECT_NAME}-${VERSION}-windows-amd64.tar.gz"
+
+      if [ ! -d "$WRK_DIR/$RELEASE_DIR" ]; then
+            mkdir "$WRK_DIR/$RELEASE_DIR"
+      fi
+
+      action "Creating archive $windows_archive..."
+      # change filename from main to gitfinder
+      tar -czf "$WRK_DIR/$RELEASE_DIR/$windows_archive" --transform='s|^main.exe|gitfinder.exe|' main.exe ../$SAMPLE_CONFIG
+      action "Copying executable to the archive "
+      info "Finished."
+      # reset the working directory
+      action "Going back to $WRK_DIR..."
+      cd $WRK_DIR
       # reset the working directory
       action "Going back to $WRK_DIR..."
       cd $WRK_DIR
@@ -106,5 +119,5 @@ clear
 linux
 
 # configures, builds and creates an archive for windows-amd64.
-# windows
+windows
 info "Build complete."
