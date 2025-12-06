@@ -26,10 +26,10 @@ cookies = {
 }
 
 
-# Using dictionary because it stores only unique values
+# Using set because it stores only unique values
 filtered = set()
 
-query = "*.lv"
+query = "site:*.eu"
 last_updated_query="&tbs=qdr:y"
 
 # start_num=0
@@ -66,6 +66,10 @@ def write_to_file(crashed=False):
     Returns:
         None
     """
+    if len(filtered) == 0:
+        print('No urls collected to write to file')
+        return
+
     # generating unique name of the file with timestamp
     timestamp = time.strftime("%Y-%m-%dT%H:%M:%S")
     if crashed:
@@ -111,45 +115,49 @@ def collect_urls(start_num=0):
         KeyboardInterrupt: If the user interrupts the program.
 
     """
-    try:
-        if start_num != 0:
-            print(f"Starting of {start_num / 10} page: {start_num}")
-        while(len(filtered) <= result_max_count):
-            print(f"we are on the page {int((start_num + 10) / 10)}")
-            r = requests.get(f'https://www.google.com/search?q=site:{query}&start={start_num}{last_updated_query}', headers=headers, cookies=cookies, timeout=60)
-            if check_blocked(r.text):
-                print(cookies)
-                print("Captcha alert")
-                continueprompt = input("Do you want to continue ? (y/n)")
-                if continueprompt != "y":
-                    # writing to file
-                    write_to_file(crashed=True)
-                    sys.exit(1)
-                # asking for a new SOCS cookie
-                GOOGLE_ABUSE_EXEMPTION = input("provide a new GOOGLE_ABUSE_EXEMPTION cookie to continue: ")
-                cookies["GOOGLE_ABUSE_EXEMPTION"] = GOOGLE_ABUSE_EXEMPTION
-                # repeat the request
-                collect_urls(start_num)
-            soup = BeautifulSoup(r.content, 'html.parser')
-            urls = [link.get('href') for link in soup.find_all('a', href=True)]
-            for url in urls:
-                url = extract_original_url(url)
-                if url is not None:
-                    filtered.add(url)
-            print(f"{len(filtered)} of {result_max_count} domains collected")
-            start_num += 10
-            time.sleep(timeout_seconds)
-        # writing all results to the file
-        write_to_file()
-    except Exception as e:
-        if isinstance(e, KeyboardInterrupt):
-            print("User interrupted the program")
-            # writing to file
-        write_to_file(crashed=True)
-        sys.exit(1)
+    previousCount = 0
+    failCount = 0
+    if start_num != 0:
+        print(f"Starting of {start_num / 10} page: {start_num}")
+    while(len(filtered) <= result_max_count):
+        print(f"we are on the page {int((start_num + 10) / 10)}")
+        r = requests.get(f'https://www.google.com/search?q={query}&start={start_num}{last_updated_query}', headers=headers, cookies=cookies, timeout=60)
+        if check_blocked(r.text):
+            print(cookies)
+            print("Captcha alert")
+            continueprompt = input("Do you want to continue ? (y/n)")
+            if continueprompt != "y":
+                # writing to file
+                write_to_file(crashed=True)
+                sys.exit(1)
+            # asking for a new SOCS cookie
+            GOOGLE_ABUSE_EXEMPTION = input("provide a new GOOGLE_ABUSE_EXEMPTION cookie to continue: ")
+            cookies["GOOGLE_ABUSE_EXEMPTION"] = GOOGLE_ABUSE_EXEMPTION
+            # repeat the request
+            collect_urls(start_num)
+        soup = BeautifulSoup(r.content, 'html.parser')
+        urls = [link.get('href') for link in soup.find_all('a', href=True)]
+        for url in urls:
+            url = extract_original_url(url)
+            if url is not None:
+                filtered.add(url)
+        print(f"{len(filtered)} of {result_max_count} domains collected")
+        start_num += 10
+        if previousCount == len(filtered):
+            failCount += 1
+            if failCount == 3:
+                print("No new urls found, exiting")
+                break
+        previousCount = len(filtered)
+        time.sleep(timeout_seconds)
+    # writing all results to the file
+    write_to_file()
 
 if __name__ == "__main__":
     # Collecting urls
-    collect_urls()
+    try:
+        collect_urls()
+    except:
+        write_to_file(crashed=True)
     # printing all collected urls, mostly for debugging purposes
     print(filtered)
