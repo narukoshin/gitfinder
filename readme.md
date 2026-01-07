@@ -96,11 +96,5 @@ Contributions are welcome! Feel free to submit pull requests for improvements, b
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-<center>
-
-
-![Panic Ahhhhh Sticker](https://media.tenor.com/K5cpoaTsn5wAAAAi/anime.gif)
-
-<span><b>ー Project by THE NEET FAMILY ー</b><br><small>We think. We create. We produce.</small></span>
-
-</center>
+<p align="center"><img src="https://media.tenor.com/K5cpoaTsn5wAAAAi/anime.gif"></p>
+<p align="center"><span><b>ー Project by THE NEET FAMILY ー</b><br><small>We think. We create. We produce.</small></span></p>
