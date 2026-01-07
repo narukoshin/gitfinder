@@ -64,3 +64,7 @@ if(UNIX AND NOT APPLE)
         z
     )
 endif()
+
+install(TARGETS main
+        RUNTIME DESTINATION bin RENAME gitfinder
+)

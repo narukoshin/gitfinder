@@ -5,6 +5,7 @@
 !.gitignore
 !CMakeLists.txt
 !LICENSE
+!Makefile
 
 # src folder
 !src
